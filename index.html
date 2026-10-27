@@ -18,6 +18,7 @@
     --f-body: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Yu Gothic", system-ui, sans-serif;
     color-scheme: dark;
   }
+  [hidden] { display: none !important; }
   html { background: var(--night); }
   body {
     background: var(--night);
@@ -118,10 +119,8 @@
     .card { width: 82cqw; gap: 0.8cqw; padding: 2cqw 3cqw; }
   }
 
+  .tools { position: absolute; right: 1.4cqw; bottom: 1.4cqw; display: flex; gap: 1cqw; z-index: 8; }
   .snd {
-    position: absolute;
-    right: 1.4cqw;
-    bottom: 1.4cqw;
     appearance: none;
     border: 1px solid rgba(241, 238, 231, 0.3);
     background: rgba(16, 19, 29, 0.55);
@@ -132,6 +131,75 @@
     cursor: pointer;
     z-index: 5;
   }
+
+  /* fullscreen: the wrapper fills the screen (real or page-level), the stage keeps 16:9 */
+  .fs { display: block; }
+  .fs.on {
+    position: fixed; inset: 0; z-index: 50;
+    display: grid; place-items: center; align-content: center; gap: 6px;
+    box-sizing: border-box;
+    background: var(--night);
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+  .fs.on .stage {
+    width: min(100%, calc((100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) * 1.7778));
+    width: min(100%, calc((100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) * 1.7778));
+  }
+  html.on-fs, html.on-fs body { overflow: hidden; }
+  html.on-fs .how, html.on-fs .rules, html.on-fs .hint-rot { display: none; }
+  .hint-rot { display: none; max-width: 1120px; margin: 0 auto 10px; color: var(--paper-dim); font-size: 13px; }
+  @media (orientation: portrait) and (max-width: 700px) { .hint-rot { display: block; } }
+  .rot-in { display: none; color: var(--paper-dim); font-size: 13px; text-align: center; padding: 0 16px; }
+  @media (orientation: portrait) { .fs.on .rot-in { display: block; } }
+
+  .btn.sub { background: transparent; box-shadow: inset 0 0 0 1px rgba(241, 238, 231, 0.5); }
+  .btn.small { font-size: max(12px, 2.4cqw); padding: 1.2cqw 2.4cqw; letter-spacing: 0.12em; }
+  .btn:disabled { opacity: 0.5; cursor: default; filter: none; }
+  .btn-row { display: flex; gap: 1.4cqw; flex-wrap: wrap; justify-content: center; }
+  .name-row { display: flex; gap: 1cqw; align-items: center; justify-content: center; }
+  .name-row input {
+    font: 600 max(16px, 2.4cqw)/1 var(--f-display);
+    width: 24cqw; min-width: 0;
+    background: rgba(241, 238, 231, 0.08);
+    color: var(--paper);
+    border: 1px solid rgba(241, 238, 231, 0.35);
+    padding: 1cqw 1.2cqw;
+    border-radius: 2px;
+  }
+  .name-row input:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  @container (max-width: 520px) { .rank { font-size: 5cqw; } .score { font-size: 7cqw; } }
+
+  .ov-rank { display: grid; place-items: center; background: rgba(16, 19, 29, 0.8); }
+  .rcard {
+    width: min(88cqw, 780px);
+    background: rgba(16, 19, 29, 0.95);
+    border: 1px solid rgba(241, 238, 231, 0.16);
+    padding: 2.2cqw 3cqw;
+    display: grid; gap: 1.2cqw; justify-items: center;
+  }
+  .rtitle { font: 800 4.2cqw/1.1 var(--f-display); margin: 0; letter-spacing: 0.3em; }
+  .rnote { font: 500 max(10px, 1.7cqw)/1.4 var(--f-body); color: var(--paper-dim); margin: 0; text-align: center; }
+  .rlist {
+    list-style: none; margin: 0; padding: 0; width: 100%;
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: repeat(5, auto); grid-auto-flow: column;
+    column-gap: 3cqw;
+  }
+  .rlist li {
+    display: grid; grid-template-columns: 2.2em minmax(0, 1fr) auto; align-items: baseline; gap: 0.5em;
+    font: 600 max(11px, 2.2cqw)/1.4 var(--f-display);
+    border-bottom: 1px solid rgba(241, 238, 231, 0.12);
+    padding: 0.2em 0.3em;
+  }
+  .rlist .n { color: var(--paper-dim); font-variant-numeric: tabular-nums; }
+  .rlist .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rlist .sc { font-weight: 800; font-variant-numeric: tabular-nums; }
+  .rlist li.me { background: rgba(207, 58, 36, 0.32); }
+  .rlist li.top1 .n { color: var(--gold); }
+  .rempty { color: var(--paper-dim); font-size: max(11px, 2cqw); margin: 0; padding: 3cqw 0; }
 
   .how {
     max-width: 1120px;
@@ -151,6 +219,8 @@
 </style>
 
 <main>
+  <p class="hint-rot">スマホは横向きにして、右下の「全画面」を押すと大きく遊べます。</p>
+  <div class="fs" id="fs">
   <div class="stage" id="stage">
     <canvas id="game" aria-label="流鏑馬のゲーム画面"></canvas>
 
@@ -159,7 +229,10 @@
       <div class="title-side">
         <span class="hanko" aria-hidden="true">的</span>
         <p class="tag">引いて、溜めて、射抜く。</p>
-        <button class="btn" id="btnStart" type="button">出走</button>
+        <div class="btn-row">
+          <button class="btn" id="btnStart" type="button">出走</button>
+          <button class="btn sub" id="btnRankT" type="button">番付</button>
+        </div>
         <p class="best" id="bestTitle"></p>
       </div>
     </div>
@@ -175,11 +248,33 @@
           <div class="stat"><dt>最大連続</dt><dd id="stCombo">0</dd></div>
           <div class="stat"><dt>命中率</dt><dd id="stAcc">0%</dd></div>
         </dl>
-        <button class="btn" id="btnRetry" type="button">もう一度</button>
+        <div class="name-row" id="nameRow">
+          <input id="nameIn" type="text" maxlength="8" placeholder="名前" autocomplete="off" aria-label="番付に載せる名前">
+          <button class="btn small" id="btnReg" type="button">番付に登録</button>
+        </div>
+        <div class="btn-row">
+          <button class="btn" id="btnRetry" type="button">もう一度</button>
+          <button class="btn sub" id="btnRankE" type="button">番付</button>
+        </div>
       </div>
     </div>
 
-    <button class="snd" id="snd" type="button" aria-pressed="false">音 入</button>
+    <div class="ov ov-rank" id="ovRank" hidden>
+      <div class="rcard">
+        <h2 class="rtitle">番付</h2>
+        <p class="rnote" id="rNote"></p>
+        <ol class="rlist" id="rList"></ol>
+        <p class="rempty" id="rEmpty" hidden>まだ記録がありません。最初の一人になりましょう。</p>
+        <button class="btn small" id="btnRankClose" type="button">閉じる</button>
+      </div>
+    </div>
+
+    <div class="tools">
+      <button class="snd" id="btnFs" type="button" aria-pressed="false">全画面</button>
+      <button class="snd" id="snd" type="button" aria-pressed="false">音 入</button>
+    </div>
+  </div>
+  <p class="rot-in">端末を横向きにすると、画面いっぱいに大きく遊べます。</p>
   </div>
 
   <section class="how" aria-label="遊び方">
@@ -413,6 +508,10 @@
     document.getElementById('newBest').hidden = !(isBest && S.score > 0);
     elEnd.hidden = false;
     refreshBest();
+    registered = false; myId = null; noteExtra = '';
+    nameIn.value = loadName();
+    nameIn.disabled = false; btnReg.disabled = false;
+    document.getElementById('nameRow').hidden = S.score <= 0;
   }
 
   /* ---------- shooting ---------- */
@@ -1055,7 +1154,13 @@
 
   window.addEventListener('keydown', function (e) {
     var tag = e.target && e.target.tagName;
-    if (tag === 'BUTTON') return;
+    if (e.code === 'Escape') {
+      if (!elRank.hidden) closeRank();
+      else if (pseudoFs) exitFs();
+      return;
+    }
+    if (tag === 'BUTTON' || tag === 'INPUT') return;
+    if (!elRank.hidden) return;
     if (e.code === 'Space' || e.code === 'Enter') {
       e.preventDefault();
       if (e.repeat) return;
@@ -1080,6 +1185,135 @@
     sndBtn.setAttribute('aria-pressed', muted ? 'true' : 'false');
     if (master) master.gain.value = muted ? 0 : 0.5;
   });
+
+  /* ---------- ranking (shared through db, this device as fallback) ---------- */
+  var elRank = document.getElementById('ovRank');
+  var elList = document.getElementById('rList');
+  var elRNote = document.getElementById('rNote');
+  var elREmpty = document.getElementById('rEmpty');
+  var nameIn = document.getElementById('nameIn');
+  var btnReg = document.getElementById('btnReg');
+  var btnRankClose = document.getElementById('btnRankClose');
+  var dbh = null, boardMode = 'local', myId = null, registered = false, noteExtra = '';
+
+  function loadLocal() {
+    try {
+      var a = JSON.parse(localStorage.getItem('yabusame-board') || '[]');
+      return Array.isArray(a) ? a.slice(0, 10) : [];
+    } catch (e) { return []; }
+  }
+  function saveLocal(a) { try { localStorage.setItem('yabusame-board', JSON.stringify(a.slice(0, 10))); } catch (e) {} }
+  function loadName() { try { return localStorage.getItem('yabusame-name') || ''; } catch (e) { return ''; } }
+  var board = loadLocal();
+
+  function renderBoard() {
+    elList.textContent = '';
+    elList.hidden = board.length === 0;
+    elREmpty.hidden = board.length > 0;
+    for (var i = 0; i < board.length; i++) {
+      var b = board[i];
+      var li = document.createElement('li');
+      if (i === 0) li.className = 'top1';
+      if (myId && b.id === myId) li.className += ' me';
+      var n = document.createElement('span'); n.className = 'n'; n.textContent = String(i + 1);
+      var nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = b.name;
+      var sc = document.createElement('span'); sc.className = 'sc'; sc.textContent = fmt(b.score);
+      li.appendChild(n); li.appendChild(nm); li.appendChild(sc);
+      elList.appendChild(li);
+    }
+    elRNote.textContent = noteExtra || (boardMode === 'shared' ? 'みんなの記録 上位10' : 'この端末の記録 上位10');
+  }
+  function openRank() { renderBoard(); elRank.hidden = false; try { btnRankClose.focus(); } catch (e) {} }
+  function closeRank() { elRank.hidden = true; }
+
+  function submitScore() {
+    if (registered || S.score <= 0) return;
+    registered = true; btnReg.disabled = true; nameIn.disabled = true;
+    var nm = (nameIn.value || '').trim().slice(0, 8) || '名無し';
+    try { localStorage.setItem('yabusame-name', nm); } catch (e) {}
+    var entry = { name: nm, score: S.score, hits: S.hits, combo: S.maxCombo, at: Date.now() };
+    function saveHere(fellBack) {
+      var id = 'l' + entry.at;
+      var a = loadLocal();
+      a.push({ id: id, name: nm, score: entry.score });
+      a.sort(function (x, y) { return y.score - x.score; });
+      a = a.slice(0, 10);
+      saveLocal(a);
+      myId = id;
+      if (boardMode !== 'shared') board = a;
+      else if (fellBack) noteExtra = '共有の番付に書き込めなかったため、この端末に保存しました';
+      openRank();
+    }
+    if (dbh) {
+      dbh.collection('scores').add(entry).then(function (ref) { myId = ref.id; openRank(); }, function () { saveHere(true); });
+    } else saveHere(false);
+  }
+
+  try {
+    if (window.claude && window.claude.use) {
+      window.claude.use('db').then(function (d) {
+        if (!d) return;
+        dbh = d;
+        d.collection('scores').orderBy('score', 'desc').limit(10).onSnapshot(function (snap) {
+          board = snap.docs.map(function (x) {
+            var o = x.data() || {};
+            return { id: x.id, name: String(o.name || '名無し').slice(0, 8), score: Number(o.score) || 0 };
+          });
+          boardMode = 'shared';
+          renderBoard();
+        }, function () {
+          dbh = null; boardMode = 'local'; board = loadLocal(); renderBoard();
+        });
+      }, function () {});
+    }
+  } catch (e) {}
+
+  document.getElementById('btnRankT').addEventListener('click', openRank);
+  document.getElementById('btnRankE').addEventListener('click', openRank);
+  btnRankClose.addEventListener('click', closeRank);
+  btnReg.addEventListener('click', submitScore);
+  nameIn.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); submitScore(); } });
+
+  /* ---------- fullscreen (real when allowed, page-level otherwise) ---------- */
+  var fsEl = document.getElementById('fs');
+  var btnFs = document.getElementById('btnFs');
+  var pseudoFs = false;
+  function realFs() { return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+  function syncFs() {
+    var on = realFs() || pseudoFs;
+    fsEl.classList.toggle('on', on);
+    document.documentElement.classList.toggle('on-fs', on);
+    btnFs.textContent = on ? '全画面を終了' : '全画面';
+    btnFs.setAttribute('aria-pressed', on ? 'true' : 'false');
+    resize();
+  }
+  function lockLandscape() {
+    try { if (screen.orientation && screen.orientation.lock) { var p = screen.orientation.lock('landscape'); if (p && p.catch) p.catch(function () {}); } } catch (e) {}
+  }
+  function unlockOrientation() { try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch (e) {} }
+  function enterFs() {
+    var req = fsEl.requestFullscreen || fsEl.webkitRequestFullscreen;
+    function fallback() { pseudoFs = true; syncFs(); lockLandscape(); }
+    if (!req || document.fullscreenEnabled === false) { fallback(); return; }
+    try {
+      var r = req.call(fsEl);
+      if (r && r.then) r.then(function () { syncFs(); lockLandscape(); }, fallback);
+      else { syncFs(); lockLandscape(); }
+    } catch (e) { fallback(); }
+  }
+  function exitFs() {
+    pseudoFs = false;
+    try {
+      if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen();
+      else if (document.webkitFullscreenElement && document.webkitExitFullscreen) document.webkitExitFullscreen();
+    } catch (e) {}
+    unlockOrientation();
+    syncFs();
+  }
+  btnFs.addEventListener('click', function () { if (realFs() || pseudoFs) exitFs(); else enterFs(); });
+  document.addEventListener('fullscreenchange', function () { if (!realFs()) { pseudoFs = false; unlockOrientation(); } syncFs(); });
+  document.addEventListener('webkitfullscreenchange', function () { if (!realFs()) { pseudoFs = false; unlockOrientation(); } syncFs(); });
+  window.addEventListener('orientationchange', function () { setTimeout(resize, 250); });
 
   /* ---------- loop ---------- */
   genTargets();
